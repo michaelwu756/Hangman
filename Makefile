@@ -12,9 +12,13 @@ run:
 hangman/%.class: hangman/%.java
 	javac -cp $(CP) $^
 
-Hangman.jar: hangman/Hangman.class hangman/WordList.class
+runJar: Hangman.jar
+	java -jar $^
+
+Hangman.jar: hangman/Hangman.class hangman/WordList.class MANIFEST.MF
 	jar -xvf json-20180130.jar
-	jar -cvf Hangman.jar MANIFEST.MF hangman/*.class org/json/*.class words.txt
+	cp ./MANIFEST.MF ./META-INF/MANIFEST.MF
+	jar -cvfm Hangman.jar MANIFEST.MF hangman/*.class org/json/*.class words.txt
 	rm -rf META-INF org
 
 clean:
