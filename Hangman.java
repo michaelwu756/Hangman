@@ -67,7 +67,8 @@ public class Hangman {
     }
 
     public void play(int num) {
-        for (int i = 0; i < num; i++) {
+        for (int i = 1; i <= num; i++) {
+            System.out.println("Game Number : " + i);
             List<Character> guessed = new ArrayList<Character>();
             do {
                 try {
