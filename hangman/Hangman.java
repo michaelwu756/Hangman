@@ -42,7 +42,13 @@ public class Hangman {
                     System.exit(0);
                     break;
                 case "help":
-                    System.out.println("Commands: exit, help, play, reset");
+                    System.out.println("Commands:");
+                    System.out.println("\texit: quit the application");
+                    System.out.println("\thelp: display this help prompt");
+                    System.out.println("\tplay: plays hangman for a specified number of games");
+                    System.out.println("\treset: reset the number of games on the server");
+                    System.out.println("\tverbose: show details of how the application decides guesses");
+                    System.out.println("\tquiet: turn verbose mode off");
                     break;
                 case "play":
                     int num = 0;
@@ -62,8 +68,12 @@ public class Hangman {
                     break;
                 case "verbose":
                     game.setVerbose(true);
+                    break;
+                case "quiet":
+                    game.setVerbose(false);
+                    break;
                 default:
-                    System.out.println("Commands: exit, help, play, reset");
+                    System.out.println("Commands: exit, help, play, reset, verbose, quiet");
             }
         }
     }
