@@ -4,15 +4,20 @@ else
 	CP = "./:./json-20180130.jar"
 endif
 
-all: Hangman.class WordList.class
+all: hangman/Hangman.class hangman/WordList.class
 
 run:
-	java -cp $(CP) Hangman
+	java -cp $(CP) hangman.Hangman
 
-%.class: %.java
+hangman/%.class: hangman/%.java
 	javac -cp $(CP) $^
 
+Hangman.jar: hangman/Hangman.class hangman/WordList.class
+	jar -xvf json-20180130.jar
+	jar -cvf Hangman.jar MANIFEST.MF hangman/*.class org/json/*.class words.txt
+	rm -rf META-INF org
+
 clean:
-	rm -rf *.class
+	rm -rf hangman/*.class
 
 .PHONY: all run

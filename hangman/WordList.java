@@ -1,3 +1,5 @@
+package hangman;
+
 import java.io.*;
 import java.util.ArrayList;
 import java.util.Hashtable;
@@ -12,7 +14,7 @@ public class WordList {
     public WordList() {
         words = new Hashtable<Integer, List<String>>();
         verbose = false;
-        File file = new File("sortedwords.txt");
+        File file = new File("words.txt");
         BufferedReader reader = null;
         try {
             reader = new BufferedReader(new FileReader(file));
