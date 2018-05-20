@@ -3,6 +3,7 @@ package hangman;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
@@ -10,6 +11,9 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -23,8 +27,8 @@ public class Hangman {
     public Hangman() {
         wordList = new WordList();
         try {
-            url = new URL("http://upe.42069.fun/2qOo5");
-            resetUrl = new URL("http://upe.42069.fun/2qOo5/reset");
+            url = new URL("http://upe.42069.fun/Oh2hl");
+            resetUrl = new URL("http://upe.42069.fun/Oh2hl/reset");
         } catch (MalformedURLException e) {
             e.printStackTrace();
             System.exit(1);
@@ -84,7 +88,7 @@ public class Hangman {
             List<Character> guessed = new ArrayList<Character>();
             do {
                 try {
-                    Thread.sleep(1000);
+                    Thread.sleep(100);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
@@ -94,16 +98,21 @@ public class Hangman {
                 char nextGuess = wordList.mostLikelyGuess(unknowns, guessed);
                 do {
                     try {
-                        Thread.sleep(1000);
+                        Thread.sleep(100);
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
                 } while (!guess(nextGuess));
                 guessed.add(nextGuess);
                 unknowns = getUnknowns();
-            } while (resp.getString("status").equals("ALIVE") && resp.getInt("remaining_guesses") > 1);
-            if (resp.getString("status").equals("ALIVE"))
-                i--;
+            } while (resp.getString("status").equals("ALIVE")); //&& resp.getInt("remaining_guesses") > 1);
+            try {
+                String result = resp.getString("lyrics").replaceAll("[^a-zA-Z_ ]", "").replaceAll(" ", "\n");
+                result += "\n";
+                Files.write(Paths.get("dictionary.txt"), result.getBytes(), StandardOpenOption.APPEND);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 
