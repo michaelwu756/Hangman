@@ -127,7 +127,7 @@ public class Hangman {
                 try {
                     String result = resp.getString("lyrics").replaceAll("[^a-zA-Z_ '-]", "").trim().replaceAll(" +", " ").replaceAll(" ", "\n");
                     result += "\n";
-                    Path path = Paths.get("dectionary.txt");
+                    Path path = Paths.get("dictionary.txt");
                     if (!Files.exists(path))
                         Files.createFile(path);
                     Files.write(path, result.getBytes(), StandardOpenOption.APPEND);
