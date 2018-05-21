@@ -15,9 +15,8 @@ hangman/%.class: hangman/%.java
 runJar: Hangman.jar
 	java -jar $^
 
-Hangman.jar: hangman/Hangman.class hangman/WordList.class MANIFEST.MF
+Hangman.jar: hangman/Hangman.class hangman/WordList.class MANIFEST.MF words.txt json-20180130.jar
 	jar -xvf json-20180130.jar
-	cp ./MANIFEST.MF ./META-INF/MANIFEST.MF
 	jar -cvfm Hangman.jar MANIFEST.MF hangman/*.class org/json/*.class words.txt
 	rm -rf META-INF org
 
