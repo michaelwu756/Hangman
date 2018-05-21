@@ -88,7 +88,7 @@ public class Hangman {
             List<Character> guessed = new ArrayList<Character>();
             do {
                 try {
-                    Thread.sleep(100);
+                    Thread.sleep(1000);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
@@ -98,7 +98,7 @@ public class Hangman {
                 char nextGuess = wordList.mostLikelyGuess(unknowns, guessed);
                 do {
                     try {
-                        Thread.sleep(100);
+                        Thread.sleep(1000);
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
