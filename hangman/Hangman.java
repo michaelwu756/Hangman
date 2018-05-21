@@ -12,6 +12,7 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
@@ -23,9 +24,11 @@ public class Hangman {
     private URL resetUrl;
     private WordList wordList;
     private JSONObject resp;
+    private Mode mode;
 
     public Hangman() {
         wordList = new WordList();
+        mode = Mode.NORMAL;
         try {
             url = new URL("http://upe.42069.fun/Oh2hl");
             resetUrl = new URL("http://upe.42069.fun/Oh2hl/reset");
@@ -53,6 +56,9 @@ public class Hangman {
                     System.out.println("\treset: reset the number of games on the server");
                     System.out.println("\tverbose: show details of how the application decides guesses");
                     System.out.println("\tquiet: turn verbose mode off");
+                    System.out.println("\tlogging-mode: store results of game into a file named dictionary.txt");
+                    System.out.println("\tcheat-mode: restarts game with one guess remaining");
+                    System.out.println("\tnormal-mode: return to default play mode");
                     break;
                 case "play":
                     int num = 0;
@@ -76,8 +82,17 @@ public class Hangman {
                 case "quiet":
                     game.setVerbose(false);
                     break;
+                case "logging-mode":
+                    game.setMode(Mode.LOGGING);
+                    break;
+                case "cheat-mode":
+                    game.setMode(Mode.CHEAT);
+                    break;
+                case "normal-mode":
+                    game.setMode(Mode.NORMAL);
+                    break;
                 default:
-                    System.out.println("Commands: exit, help, play, reset, verbose, quiet");
+                    System.out.println("Commands: exit, help, play, reset, verbose, quiet, logging-mode, cheat-mode, normal-mode");
             }
         }
     }
@@ -105,13 +120,20 @@ public class Hangman {
                 } while (!guess(nextGuess));
                 guessed.add(nextGuess);
                 unknowns = getUnknowns();
-            } while (resp.getString("status").equals("ALIVE")); //&& resp.getInt("remaining_guesses") > 1);
-            try {
-                String result = resp.getString("lyrics").replaceAll("[^a-zA-Z_ ]", "").replaceAll(" ", "\n");
-                result += "\n";
-                Files.write(Paths.get("dictionary.txt"), result.getBytes(), StandardOpenOption.APPEND);
-            } catch (IOException e) {
-                e.printStackTrace();
+            } while (resp.getString("status").equals("ALIVE") && (mode != Mode.CHEAT || resp.getInt("remaining_guesses") > 1));
+            if (mode == Mode.CHEAT && resp.getString("status").equals("ALIVE"))
+                i--;
+            else if (mode == Mode.LOGGING) {
+                try {
+                    String result = resp.getString("lyrics").replaceAll("[^a-zA-Z_ '-]", "").trim().replaceAll(" +", " ").replaceAll(" ", "\n");
+                    result += "\n";
+                    Path path = Paths.get("dectionary.txt");
+                    if (!Files.exists(path))
+                        Files.createFile(path);
+                    Files.write(path, result.getBytes(), StandardOpenOption.APPEND);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
         }
     }
@@ -147,10 +169,14 @@ public class Hangman {
         wordList.setVerbose(val);
     }
 
+    public void setMode(Mode m) {
+        mode = m;
+    }
+
     private List<String> getUnknowns() {
         List<String> res = new ArrayList<String>();
         String state = resp.getString("state");
-        state = state.replaceAll("[^a-zA-Z_ ]", "");
+        state = state.replaceAll("[^a-zA-Z_ '-]", "");
         String[] splitState = state.split(" ");
         for (String unknown : splitState) {
             res.add(unknown);
@@ -211,5 +237,9 @@ public class Hangman {
             return false;
         }
         return true;
+    }
+
+    private enum Mode {
+        NORMAL, LOGGING, CHEAT
     }
 }

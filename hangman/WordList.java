@@ -85,7 +85,7 @@ public class WordList {
                 matches.forEach(match -> {
                     if (verbose)
                         System.out.print(" " + match);
-                    String removed = removeGuessed(match, guessed);
+                    String removed = removeGuessed(match.replaceAll("[^" + alphabet + "]", ""), guessed);
                     int toAdd = 1;
                     switch (matches.size()) {
                         case 1:
