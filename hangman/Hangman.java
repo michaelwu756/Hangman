@@ -25,10 +25,12 @@ public class Hangman {
     private WordList wordList;
     private JSONObject resp;
     private Mode mode;
+    private boolean logging;
 
     public Hangman() {
         wordList = new WordList();
         mode = Mode.NORMAL;
+        logging = false;
         try {
             url = new URL("http://upe.42069.fun/Oh2hl");
             resetUrl = new URL("http://upe.42069.fun/Oh2hl/reset");
@@ -56,9 +58,10 @@ public class Hangman {
                     System.out.println("\treset: reset the number of games on the server");
                     System.out.println("\tverbose: show details of how the application decides guesses");
                     System.out.println("\tquiet: turn verbose mode off");
-                    System.out.println("\tlogging-mode: store results of game into a file named dictionary.txt");
+                    System.out.println("\tlogging: store results of game into a file named dictionary.txt");
+                    System.out.println("\tno-logging: turns logging off");
                     System.out.println("\tcheat-mode: restarts game with one guess remaining");
-                    System.out.println("\tlose-mode: tries to lose the game and stores result in dictionary.txt. Used for faster harvesting of data");
+                    System.out.println("\tlose-mode: tries to lose the game. used for faster harvesting of data");
                     System.out.println("\tnormal-mode: return to default play mode");
                     break;
                 case "play":
@@ -83,8 +86,11 @@ public class Hangman {
                 case "quiet":
                     game.setVerbose(false);
                     break;
-                case "logging-mode":
-                    game.setMode(Mode.LOGGING);
+                case "logging":
+                    game.setLogging(true);
+                    break;
+                case "no-logging":
+                    game.setLogging(false);
                     break;
                 case "cheat-mode":
                     game.setMode(Mode.CHEAT);
@@ -96,7 +102,7 @@ public class Hangman {
                     game.setMode(Mode.NORMAL);
                     break;
                 default:
-                    System.out.println("Commands: exit, help, play, reset, verbose, quiet, logging-mode, cheat-mode, lose-mode, normal-mode");
+                    System.out.println("Commands: exit, help, play, reset, verbose, quiet, logging, no-logging, cheat-mode, lose-mode, normal-mode");
             }
         }
     }
@@ -135,7 +141,7 @@ public class Hangman {
             } while (resp.getString("status").equals("ALIVE") && (mode != Mode.CHEAT || resp.getInt("remaining_guesses") > 1));
             if (mode == Mode.CHEAT && resp.getString("status").equals("ALIVE"))
                 i--;
-            else if (mode == Mode.LOGGING || mode == Mode.LOSE) {
+            else if (logging) {
                 try {
                     String result = resp.getString("lyrics").replaceAll("[^a-zA-Z_ '-]", "").trim().replaceAll(" +", " ").replaceAll(" ", "\n");
                     result += "\n";
@@ -179,6 +185,10 @@ public class Hangman {
 
     public void setVerbose(boolean val) {
         wordList.setVerbose(val);
+    }
+
+    public void setLogging(boolean val) {
+        logging = val;
     }
 
     public void setMode(Mode m) {
@@ -252,6 +262,6 @@ public class Hangman {
     }
 
     private enum Mode {
-        NORMAL, LOGGING, CHEAT, LOSE
+        NORMAL, CHEAT, LOSE
     }
 }
