@@ -58,6 +58,7 @@ public class Hangman {
                     System.out.println("\tquiet: turn verbose mode off");
                     System.out.println("\tlogging-mode: store results of game into a file named dictionary.txt");
                     System.out.println("\tcheat-mode: restarts game with one guess remaining");
+                    System.out.println("\tlose-mode: tries to lose the game and stores result in dictionary.txt. Used for faster harvesting of data");
                     System.out.println("\tnormal-mode: return to default play mode");
                     break;
                 case "play":
@@ -88,11 +89,14 @@ public class Hangman {
                 case "cheat-mode":
                     game.setMode(Mode.CHEAT);
                     break;
+                case "lose-mode":
+                    game.setMode(Mode.LOSE);
+                    break;
                 case "normal-mode":
                     game.setMode(Mode.NORMAL);
                     break;
                 default:
-                    System.out.println("Commands: exit, help, play, reset, verbose, quiet, logging-mode, cheat-mode, normal-mode");
+                    System.out.println("Commands: exit, help, play, reset, verbose, quiet, logging-mode, cheat-mode, lose-mode, normal-mode");
             }
         }
     }
@@ -111,6 +115,14 @@ public class Hangman {
             List<String> unknowns = getUnknowns();
             do {
                 char nextGuess = wordList.mostLikelyGuess(unknowns, guessed);
+                if (mode == Mode.LOSE) {
+                    String alphabet = "zjqxkvbpgwyfmculdhrsnioate";
+                    for (char c : alphabet.toCharArray())
+                        if(!guessed.contains(c)) {
+                            nextGuess = c;
+                            break;
+                        }
+                }
                 do {
                     try {
                         Thread.sleep(1000);
@@ -123,7 +135,7 @@ public class Hangman {
             } while (resp.getString("status").equals("ALIVE") && (mode != Mode.CHEAT || resp.getInt("remaining_guesses") > 1));
             if (mode == Mode.CHEAT && resp.getString("status").equals("ALIVE"))
                 i--;
-            else if (mode == Mode.LOGGING) {
+            else if (mode == Mode.LOGGING || mode == Mode.LOSE) {
                 try {
                     String result = resp.getString("lyrics").replaceAll("[^a-zA-Z_ '-]", "").trim().replaceAll(" +", " ").replaceAll(" ", "\n");
                     result += "\n";
@@ -240,6 +252,6 @@ public class Hangman {
     }
 
     private enum Mode {
-        NORMAL, LOGGING, CHEAT
+        NORMAL, LOGGING, CHEAT, LOSE
     }
 }
