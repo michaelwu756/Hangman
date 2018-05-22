@@ -52,7 +52,7 @@ public class WordList {
         String replacement = "[^";
         for (Character character : guessed)
             replacement += character;
-        replacement += "]";
+        replacement += "'-]";
         String regex = unknown.replace("_", replacement);
         Pattern pattern = Pattern.compile(regex, Pattern.CASE_INSENSITIVE);
         return words.get(unknown.length()).stream().filter(word -> pattern.matcher(word).matches()).collect(Collectors.toList());
