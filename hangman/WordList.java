@@ -47,11 +47,10 @@ public class WordList {
     private List<String> findMatches(String unknown, List<Character> guessed) {
         if (unknown == null || words.get(unknown.length()) == null)
             return new ArrayList<String>();
-        if (guessed == null || guessed.size() == 0)
-            return words.get(unknown.length());
         String replacement = "[^";
-        for (Character character : guessed)
-            replacement += character;
+        if (guessed != null)
+            for (Character character : guessed)
+                replacement += character;
         replacement += "'-]";
         String regex = unknown.replace("_", replacement);
         Pattern pattern = Pattern.compile(regex, Pattern.CASE_INSENSITIVE);
