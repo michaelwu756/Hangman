@@ -141,7 +141,7 @@ public class Hangman {
             } while (resp.getString("status").equals("ALIVE") && (mode != Mode.CHEAT || resp.getInt("remaining_guesses") > 1));
             if (mode == Mode.CHEAT && resp.getString("status").equals("ALIVE"))
                 i--;
-            if (logging) {
+            else if (logging) {
                 try {
                     String result = resp.getString("lyrics").replaceAll("[^a-zA-Z_ '-]", "").trim().replaceAll(" +", " ").replaceAll(" ", "\n");
                     result += "\n";
